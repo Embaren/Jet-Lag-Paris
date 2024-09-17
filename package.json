@@ -1,0 +1,24 @@
+{
+  "name": "jet-lag-paris",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Embaren/Jet-Lag-Paris.git"
+  },
+  "author": "Emile Barbier--Renard",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Embaren/Jet-Lag-Paris/issues"
+  },
+  "homepage": "https://github.com/Embaren/Jet-Lag-Paris#readme",
+  "dependencies": {
+    "express": "^4.21.0",
+    "ol": "^10.1.0",
+    "socket.io": "^4.7.5"
+  }
+}

@@ -1,0 +1,48 @@
+{
+    "teams": [
+        {
+            "name": "JAUNE",
+            "color": [
+                255,
+                255,
+                0
+            ]
+        },
+        {
+            "name": "CYAN",
+            "color": [
+                0,
+                255,
+                255
+            ]
+        },
+        {
+            "name": "MAGENTA",
+            "color": [
+                255,
+                0,
+                255
+            ]
+        }
+    ],
+    "terrain": {
+        "phaseAngle": 0.31415926535,
+        "neutralRadius": 500,
+        "gameCenter": [
+            261350,
+            6251150
+        ],
+        "clipPath": "/resources/geojsons/paris.geojson",
+        "linesPath": "/resources/geojsons/trains.geojson",
+        "stationsPath": "/resources/geojsons/gares.geojson",
+        "addressesPath": "/resources/geojsons/adresse_paris.geojson",
+        "extent": [
+            250669.7678430116,
+            6243678.177764551,
+            268896.5033219801,
+            6258133.81412258
+        ]
+    },
+    "nAddressesPerTeam": 5,
+    "initialPoints": 5
+}
