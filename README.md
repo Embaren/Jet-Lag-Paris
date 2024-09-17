@@ -18,6 +18,8 @@ Chaque joueur est traqué par GPS. Sa position est toujours révélée aux joueu
 
 Les joueurs peuvent se déplacer librement et à volonté à travers Paris intramuros en utilisant les modes de transport suivants : leurs propres pieds ainsi que les transports inclus dans le pass Navigo (Métro, RER, Tramway, Bus & Funiculaire).
 
+Les joueurs ne peuvent utiliser que des cartes statistiques (application du jeu, carte papier, plan dans les stations) pour se repérer et ont interdiction absolue de faire appel à des applications de calcul d'itinéraire type Google Maps ou l'application RATP.
+
 Il leur est interdit de franchir le boulevard périphérique, même temporairement ou en utilisant une ligne de transports en commun.
 
 De plus, les joueurs doivent respecter les pièges posés sur certaines lignes ou stations. Ils ne sont affectés que par les pièges situés en dehors de leur secteur et de la zone neutre. Aucun piège ne s'applique à un joueur au sein de son propre secteur.
