@@ -132,10 +132,20 @@ export class Game{
         const game = this;
         if(autorun){
             game.socket.on("disconnect", () => {
-                console.log("Disconnect");
                 game.stopTracking();
+                
+                game.container.innerHTML="";
+                const disconnectDiv = document.createElement("div");
+                disconnectDiv.style['color']="white";
+                disconnectDiv.style['position']="absolute";
+                disconnectDiv.style['top']="50%";
+                disconnectDiv.style['-ms-transform']="translateY(-50%)";
+                disconnectDiv.style['transform']="translateY(-50%)";
+                disconnectDiv.appendChild(document.createTextNode("CONNECTION PERDUE. VEUILLEZ ATTENDRE OU REACTUALISER LA PAGE."));
+                game.container.appendChild(disconnectDiv);
             });
             game.socket.on("connect", () => {
+                console.log("Connect");
                 game.initConfig();
             });
         }

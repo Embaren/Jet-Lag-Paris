@@ -9,7 +9,7 @@ class Game{
     }
     
     new(){
-        this.io = socketio(this.server);
+        this.io = null;
         this.players = {};
         Object.keys(this.config.players).forEach((playerId)=>{
             this.players[playerId] = {
@@ -44,6 +44,8 @@ class Game{
     }
     
     run(){
+        console.log("Game running");
+        this.io = socketio(this.server);
         const game = this;
         this.io.on('connection', (socket) => {            
             console.log('a user connected');
