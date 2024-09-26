@@ -25,6 +25,38 @@
             ]
         }
     ],
+    "players":{
+        "j00":{
+            "name": "Joueur 00",
+            "team":0,
+            "picture":"/resources/images/players/j00.jpg"
+        },
+        "j01":{
+            "name": "Joueur 01",
+            "team":0,
+            "picture":"/resources/images/players/j01.jpg"
+        },
+        "j10":{
+            "name": "Joueur 10",
+            "team":1,
+            "picture":"/resources/images/players/j10.jpg"
+        },
+        "j11":{
+            "name": "Joueur 11",
+            "team":1,
+            "picture":"/resources/images/players/j11.jpg"
+        },
+        "j20":{
+            "name": "Joueur 20",
+            "team":2,
+            "picture":"/resources/images/players/j20.jpg"
+        },
+        "j21":{
+            "name": "Joueur 21",
+            "team":2,
+            "picture":"/resources/images/players/j21.jpg"
+        }
+    },
     "terrain": {
         "phaseAngle": 0.31415926535,
         "neutralRadius": 500,
@@ -42,6 +74,12 @@
             268896.5033219801,
             6258133.81412258
         ]
+    },
+    "locations": {
+        "minUpdateTime": 180000,
+        "maxUpdateTime": 1200000,
+        "minUpdateRange": 0,
+        "maxUpdateRange": 250
     },
     "nAddressesPerTeam": 5,
     "initialPoints": 5

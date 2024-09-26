@@ -1,4 +1,4 @@
-import {rgba} from '/scripts/utils.js'
+import {rgba, msToTime} from '/scripts/utils.js'
 
 function getSectorFeature(pos,radius,arc,phase,inner_radius=0,color=[255,0,0]){
     const circleFeature = new ol.Feature({
@@ -27,36 +27,38 @@ function getSectorFeature(pos,radius,arc,phase,inner_radius=0,color=[255,0,0]){
 }
 
 class VisibilityControl extends ol.control.Control {
-  constructor(layerCollection) {
+    constructor(layerCollections) {
 
-    const visibilityDiv = document.createElement('div');
-    visibilityDiv.appendChild(document.createTextNode("VISIBILITE"));
-    visibilityDiv.className = 'ol-unselectable ol-control ol-visibility';
+        const visibilityDiv = document.createElement('div');
+        visibilityDiv.appendChild(document.createTextNode("VISIBILITE"));
+        visibilityDiv.className = 'ol-unselectable ol-control ol-visibility';
 
-    super({
-        element: visibilityDiv,
-    });
-
-    layerCollection.on('add',(e)=>{
-        const layer = e.element;
-        const name = layer.name ? layer.name : "layer";
-        const button = document.createElement('button');
-        button.className = 'ol-unselectable';
-        button.innerHTML = name;
-        visibilityDiv.appendChild(button);
-        button.addEventListener('click', ()=>{
-            const isVisible = layer.getVisible();
-            if(isVisible){
-                button.classList.add('ol-control-unabled');
-            }
-            else{
-                button.classList.remove('ol-control-unabled');
-            }
-            layer.setVisible(!isVisible)}
-        );
+        super({
+            element: visibilityDiv,
+        });
         
-    });
-  }
+        layerCollections.forEach((layerCollection)=>{
+            layerCollection.on('add',(e)=>{
+                const layer = e.element;
+                const name = layer.name ? layer.name : "layer";
+                const button = document.createElement('button');
+                button.className = 'ol-unselectable';
+                button.innerHTML = name;
+                visibilityDiv.appendChild(button);
+                button.addEventListener('click', ()=>{
+                    const isVisible = layer.getVisible();
+                    if(isVisible){
+                        button.classList.add('ol-control-unabled');
+                    }
+                    else{
+                        button.classList.remove('ol-control-unabled');
+                    }
+                    layer.setVisible(!isVisible)}
+                );
+                
+            });
+        });
+    }
 }
 
 class Infobox extends ol.control.Control {
@@ -86,9 +88,10 @@ class Infobox extends ol.control.Control {
 }
 
 export class Map{
-    constructor(containerID,gameConfig,zoomLevel,clipFeature,library){     
-        this.gameConfig = gameConfig;
-        this.library = library;
+    constructor(game,containerID,clipFeature,zoomLevel){ 
+    //constructor(containerID,gameConfig,zoomLevel,clipFeature,library){
+        
+        this.game = game
     
         // Background layer
         this.bgLayer = new ol.layer.Tile({
@@ -99,15 +102,19 @@ export class Map{
         this.sectorsLayer = new ol.layer.Vector({
             source: new ol.source.Vector({wrapX: false}),
         });
-        const extent = this.gameConfig.terrain.extent;
+        const extent = this.game.config.terrain.extent;
         const sectorsSource = this.sectorsLayer.getSource();
         const clipDims = [extent[2]-extent[0],extent[3]-extent[1]];
-        const arcLength = 2*Math.PI/gameConfig.teams.length;
-        for (let i = 0 ; i<gameConfig.teams.length ; i++){
-            const sectorFeature = getSectorFeature(gameConfig.terrain.gameCenter,Math.max(...clipDims),arcLength,i*arcLength+gameConfig.terrain.phaseAngle,gameConfig.terrain.neutralRadius,gameConfig.teams[i].color);
+        const arcLength = 2*Math.PI/this.game.config.teams.length;
+        const terrainConfig = this.game.config.terrain;
+        for (let i = 0 ; i<this.game.config.teams.length ; i++){
+            const sectorFeature = getSectorFeature(terrainConfig.gameCenter,Math.max(...clipDims),arcLength,i*arcLength+terrainConfig.phaseAngle,terrainConfig.neutralRadius,this.game.config.teams[i].color);
             sectorsSource.addFeature(sectorFeature);
         }
     
+        // Content layers collection
+        this.clippedContentLayers = new ol.Collection([]);
+        
         // Content layers collection
         this.contentLayers = new ol.Collection([]);
         
@@ -122,17 +129,17 @@ export class Map{
         this.clipGeometry = clipFeature.getGeometry()
         
         // Controls
-        const visibilityControls = new VisibilityControl(this.contentLayers);
+        const visibilityControls = new VisibilityControl([this.clippedContentLayers,this.contentLayers]);
         this.infobox = new Infobox();
         
         // Init map
         this.map = new ol.Map({
             target: containerID,
             controls: ol.control.defaults.defaults().extend([visibilityControls, this.infobox]),
-            layers: [this.bgLayer,this.sectorsLayer,...this.contentLayers.getArray(),this.clipLayer],
+            layers: [this.bgLayer,this.sectorsLayer,...this.clippedContentLayers.getArray(),...this.contentLayers.getArray(),this.clipLayer],
             view: new ol.View({
                 projection: 'EPSG:3857',
-                center:gameConfig.terrain.gameCenter,
+                center:game.config.terrain.gameCenter,
                 zoom:13,
             }),
         });
@@ -169,27 +176,31 @@ export class Map{
                 switch(type){
                 case "line":{
                     const mode = self.selected.get('mode');
-                    const line = self.library.transports[mode].lines[self.selected.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[self.selected.get('line_id')];
                     const color = line.color;
                     line.features.forEach((feature)=>{
                         if(feature.get('type')=='line'){
-                            feature.setStyle(self.library.transports[mode].style(color));
+                            feature.setStyle(self.game.library.transports[mode].style(color));
                         }
                         else if(feature.get('type')=='station'){
-                            feature.setStyle(self.library.transports[mode].style(color));
+                            feature.setStyle(self.game.library.transports[mode].style(color));
                         }
                     });
                     break;
                 }
                 case "station":{
                     const mode = self.selected.get('mode');
-                    const line = self.library.transports[mode].lines[self.selected.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[self.selected.get('line_id')];
                     const color = line.color;
-                    self.selected.setStyle(self.library.transports[mode].style(color));
+                    self.selected.setStyle(self.game.library.transports[mode].style(color));
                     break;
                 }
                 case "address":{
-                    self.selected.setStyle(self.library.addresses.style('black',false));
+                    self.selected.setStyle(self.game.library.addresses.style('black',false));
+                    break;
+                }
+                case "player":{
+                    self.selected.setStyle(self.game.players.states[self.selected.get('playerId')].style());
                     break;
                 }
                 }
@@ -204,13 +215,13 @@ export class Map{
                 case "line":{
                     self.selected = f;
                     const mode = f.get('mode');
-                    const line = self.library.transports[mode].lines[f.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[f.get('line_id')];
                     line.features.forEach((feature)=>{
                         if(feature.get('type')=='line'){
-                            feature.setStyle(self.library.transports[mode].style('white',true));
+                            feature.setStyle(self.game.library.transports[mode].style('white',true));
                         }
                         else{
-                            feature.setStyle(self.library.transports[mode].style('white'));
+                            feature.setStyle(self.game.library.transports[mode].style('white'));
                         }
                     });
                     break;
@@ -218,13 +229,18 @@ export class Map{
                 case "station":{
                     self.selected = f;
                     const mode = f.get('mode');
-                    const line = self.library.transports[mode].lines[f.get('line_id')];
-                    f.setStyle(self.library.transports[mode].style('white',true));
+                    const line = self.game.library.transports[mode].lines[f.get('line_id')];
+                    f.setStyle(self.game.library.transports[mode].style('white',true));
                     break;
                 }
                 case "address":{
                     self.selected = f;
-                    f.setStyle(self.library.addresses.style('white',true));
+                    f.setStyle(self.game.library.addresses.style('white',true));
+                    break;
+                }
+                case "player":{
+                    self.selected = f;
+                    f.setStyle(self.game.players.states[self.selected.get('playerId')].style('white',true));
                     break;
                 }
                 };
@@ -234,7 +250,7 @@ export class Map{
             if(self.selected){ 
                 switch(self.selected.get('type')){
                 case "line":{
-                    const line = self.library.transports[self.selected.get('mode')].lines[self.selected.get('line_id')];
+                    const line = self.game.library.transports[self.selected.get('mode')].lines[self.selected.get('line_id')];
                     popover = new bootstrap.Popover(popupElement, {
                         animation: false,
                         container: popupElement,
@@ -247,7 +263,7 @@ export class Map{
                     break;
                 }
                 case "station":{
-                    const line = self.library.transports[self.selected.get('mode')].lines[self.selected.get('line_id')];
+                    const line = self.game.library.transports[self.selected.get('mode')].lines[self.selected.get('line_id')];
                     popover = new bootstrap.Popover(popupElement, {
                         animation: false,
                         container: popupElement,
@@ -263,10 +279,24 @@ export class Map{
                     popover = new bootstrap.Popover(popupElement, {
                         animation: false,
                         container: popupElement,
-                        content: "<p>Vous avez sélectionné une adresse de l'équipe "+self.gameConfig.teams[self.selected.get('team')].name+".</p>",
+                        content: "<p>Vous avez sélectionné une adresse de l'équipe "+self.game.config.teams[self.selected.get('team')].name+".</p>",
                         html: true,
                         placement: 'top',
                         title: self.selected.get('name'),
+                    });
+                    popover.show();
+                    break;
+                }
+                case "player":{
+                    const playerId = self.selected.get('playerId');
+                    const timeSinceUpdate = Date.now()-self.game.players.states[playerId].loc.timestamp;
+                    popover = new bootstrap.Popover(popupElement, {
+                        animation: false,
+                        container: popupElement,
+                        content: "<p>Equipe : "+self.game.config.teams[self.game.config.players[playerId].team].name+"</p><p>Dernière position enregistrée il y a "+msToTime(timeSinceUpdate,"s")+".</p>",
+                        html: true,
+                        placement: 'top',
+                        title: self.game.config.players[playerId].name,
                     });
                     popover.show();
                     break;
@@ -298,24 +328,28 @@ export class Map{
                 switch(type){
                 case "line":{
                     const mode = highlighted.get('mode');
-                    const line = self.library.transports[mode].lines[highlighted.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[highlighted.get('line_id')];
                     const color = line.color;
                     line.features.forEach((feature)=>{
                         if(feature.get('type')=='line'){
-                            feature.setStyle(self.library.transports[mode].style(color));
+                            feature.setStyle(self.game.library.transports[mode].style(color));
                         }
                     });
                     break;
                 }
                 case "station":{
                     const mode = highlighted.get('mode');
-                    const line = self.library.transports[mode].lines[highlighted.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[highlighted.get('line_id')];
                     const color = (self.selected!=null && self.selected.get('type')!='station' && highlighted.get('line_id')==self.selected.get('line_id')) ? 'white' : line.color;
-                    highlighted.setStyle(self.library.transports[mode].style(color));
+                    highlighted.setStyle(self.game.library.transports[mode].style(color));
                     break;
                 }
                 case "address":{
-                    highlighted.setStyle(self.library.addresses.style('black',false));
+                    highlighted.setStyle(self.game.library.addresses.style('black',false));
+                    break;
+                }
+                case "player":{
+                    highlighted.setStyle(self.game.players.states[highlighted.get('playerId')].style());
                     break;
                 }
                 }
@@ -341,11 +375,11 @@ export class Map{
                 case "line":{
                     self.highlighted = f;
                     const mode = self.highlighted.get('mode');
-                    const line = self.library.transports[mode].lines[self.highlighted.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[self.highlighted.get('line_id')];
                     const color = line.color;
                     line.features.forEach((feature)=>{
                         if(feature.get('type')=='line'){
-                            feature.setStyle(self.library.transports[mode].style(color,true));
+                            feature.setStyle(self.game.library.transports[mode].style(color,true));
                         }
                         else{
                         }
@@ -355,15 +389,19 @@ export class Map{
                 case "station":{
                     self.highlighted = f;
                     const mode = self.highlighted.get('mode');
-                    const line = self.library.transports[mode].lines[self.highlighted.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[self.highlighted.get('line_id')];
                     const color = line.color;
-                    self.highlighted.setStyle(self.library.transports[mode].style(color,true));
-                    //highlighted.setStyle(self.library.transports[mode].style('white',true));
+                    self.highlighted.setStyle(self.game.library.transports[mode].style(color,true));
                     break;
                 }
                 case "address":{
                     self.highlighted = f;
-                    self.highlighted.setStyle(self.library.addresses.style('black',true));
+                    self.highlighted.setStyle(self.game.library.addresses.style('black',true));
+                    break;
+                }
+                case "player":{
+                    self.highlighted = f;
+                    self.highlighted.setStyle(self.game.players.states[self.highlighted.get('playerId')].style(null,true));
                     break;
                 }
                 };
@@ -371,12 +409,12 @@ export class Map{
                 return true;
             });
             
-            // Displays highlighted name
+            // Displays highlighted info
             if (self.highlighted) {
                 switch(self.highlighted.get('type')){
                 case "line":{
                     const mode = self.highlighted.get('mode');
-                    const line = self.library.transports[mode].lines[self.highlighted.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[self.highlighted.get('line_id')];
                     const color = line.color;
                     const lineName = line.name;
                     const b = document.createElement("b");
@@ -387,7 +425,7 @@ export class Map{
                 }
                 case "station":{
                     const mode = self.highlighted.get('mode');
-                    const line = self.library.transports[mode].lines[self.highlighted.get('line_id')];
+                    const line = self.game.library.transports[mode].lines[self.highlighted.get('line_id')];
                     const color = line.color;
                     const lineName = line.name;
                     const stationName = self.highlighted.get('name');
@@ -407,9 +445,23 @@ export class Map{
                     b.appendChild(document.createTextNode(self.highlighted.get("name")));
                     contentDiv.appendChild(b);
                     contentDiv.appendChild(document.createElement("br"));
-                    contentDiv.appendChild(document.createTextNode("Contrôlé par "+self.gameConfig.teams[self.highlighted.get('current_owner')].name));
+                    contentDiv.appendChild(document.createTextNode("Contrôlé par "+self.game.config.teams[self.highlighted.get('current_owner')].name));
                     self.infobox.setContent(contentDiv);
                     self.infobox.setColor(rgba(...self.highlighted.get('owner_color')));
+                    break;
+                }
+                case "player":{
+                    const playerId = self.highlighted.get('playerId');
+                    const contentDiv = document.createElement("div");
+                    const b = document.createElement("b");
+                    b.appendChild(document.createTextNode(self.game.config.players[playerId].name));
+                    contentDiv.appendChild(b);
+                    contentDiv.appendChild(document.createElement("br"));
+                    const timeSinceUpdate = Date.now()-self.game.players.states[playerId].loc.timestamp;
+                    
+                    contentDiv.appendChild(document.createTextNode("Position mise à jour il y a "+msToTime(timeSinceUpdate,'s')));
+                    self.infobox.setContent(contentDiv);
+                    self.infobox.setColor(rgba(...self.game.config.teams[self.game.config.players[playerId].team].color));
                     break;
                 }
                 }
@@ -419,13 +471,13 @@ export class Map{
     }
     
     updateLayers(){
-        this.map.setLayers([this.bgLayer,this.sectorsLayer,...this.contentLayers.getArray(),this.clipLayer]);
+        this.map.setLayers([this.bgLayer,this.sectorsLayer,...this.clippedContentLayers.getArray(),...this.contentLayers.getArray(),this.clipLayer]);
     }
     
     _initClipping(){      
         // Update all layers when a new shape is added to the clipping layer
         this.clipLayer.getSource().on('addfeature',()=>{
-            const layers = [this.bgLayer,this.sectorsLayer,...this.contentLayers.getArray()];
+            const layers = [this.bgLayer,this.sectorsLayer,...this.clippedContentLayers.getArray()];
             layers.forEach((layer)=>{
                 this._setClipping(layer);
             });
@@ -452,22 +504,38 @@ export class Map{
             layer.clip(this.getPostrenderClipFn());
         }
         else{
-            layer.setExtent(this.gameConfig.terrain.extent);
+            layer.setExtent(this.game.config.terrain.extent);
             layer.on('postrender',this.getPostrenderClipFn());
             layer.postrenderFn = this.getPostrenderClipFn();
         }
     }
     
+    // Add a layer above the mask
     addLayer(layer){
-        this._setClipping(layer);
         this.contentLayers.push(layer);
         this.updateLayers();
     }
     
+    // Add a layer behind the mask
+    addClippedLayer(layer){
+        this._setClipping(layer);
+        this.clippedContentLayers.push(layer);
+        this.updateLayers();
+    }
+    
+    // Add layers above the mask
     addLayers(layers){
         layers.forEach((layer)=>{
-            this._setClipping(layer);
             this.contentLayers.push(layer);
+        });
+        this.updateLayers();
+    }
+    
+    // Add layers behind the mask
+    addClippedLayers(layers){
+        layers.forEach((layer)=>{
+            this._setClipping(layer);
+            this.clippedContentLayers.push(layer);
         });
         this.updateLayers();
     }

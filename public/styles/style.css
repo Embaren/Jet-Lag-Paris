@@ -1,3 +1,7 @@
+html{
+    height:100%;
+}
+
 body{
     font-family:"Rubik", sans-serif;
     text-align:center;
@@ -8,7 +12,7 @@ body{
     autocomplete:"off";
     margin:0;
     height:100%;
-    font-size:1.5em;
+    font-size:2rem;
 }
 
 #mapDiv{
@@ -23,7 +27,7 @@ body{
     color:var(--ol-background-color);
     top:.5em;
     right:.5em;
-    font-size:1.5em;
+    font-size:3rem;
 }
 .ol-visibility button{
     width:100%;
@@ -39,12 +43,12 @@ body{
 }
 .ol-infobox{
     color:var(--ol-background-color);
-    bottom:.5em;
+    bottom:.5rem;
     left:50%;
     transform: translateX(-50%);
-    padding-left:.5em;
-    padding-right:.5em;
-    font-size:2em;
+    padding-left:.5rem;
+    padding-right:.5rem;
+    font-size:3rem;
 }
 
 .dot {
@@ -52,6 +56,15 @@ body{
   width: 2em;
   border-radius: 50%;
   display: inline-block;
+}
+
+.popover{
+    max-width: 60cqw;
+    width: 60cqw;
+    font-size:2rem;
+}
+.popover-header{
+    font-size:1em;
 }
 
 h1{
@@ -96,6 +109,26 @@ button:hover{
     font-size: 1.17em;
     height: 2em;
     width: 2em;
+}
+
+.select_player_div{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-evenly;
+    font-size: 2em;
+}
+
+.select_player_div div{
+    display: flex;
+    flex-direction: column;
+    color:white;
+    border: solid white;
+    border-radius:10%;
+}
+.select_player_div button{
+    border-color:inherit;
+    color:black;
 }
 
 .ui-layer {

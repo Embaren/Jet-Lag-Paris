@@ -27,12 +27,10 @@ function getRandomAddresses(addressesFeatures, gameConfig, clipGeometry){
         sampledIndices.push(i);
         
         const feature = addressesFeatures[i];
-        //const coords = feature["geometry"]["coordinates"];
         const coords = feature.getGeometry().getCoordinates();
         
         // Discard out of bounds
         if(!clipGeometry.intersectsCoordinate(coords)){
-            console.log(coords);
             continue;
         }
         

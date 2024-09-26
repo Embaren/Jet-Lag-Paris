@@ -44,4 +44,25 @@ function checkSector(coords, gameConfig){
     return team;
 }
 
-module.exports = {mod,checkSector,loadJSONSync,loadJSON,loadGeoJSON};
+// Converts a duration to a string hh:mm:ss.ms
+function msToTime(s,precision="ms"){
+    const ms = s % 1000;
+    s = (s - ms) / 1000;
+    const secs = s % 60;
+    s = (s - secs) / 60;
+    const mins = s % 60;
+    const hrs = (s - mins) / 60;
+
+    switch(precision){
+        case "h":
+            return hrs;
+        case "m":
+            return hrs + ':' + mins;
+        case "s":
+            return hrs + ':' + mins + ':' + secs;
+        default:
+            return hrs + ':' + mins + ':' + secs + '.' + ms;
+    }
+}
+
+module.exports = {mod,checkSector,loadJSONSync,loadJSON,loadGeoJSON,msToTime};

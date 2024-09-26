@@ -1,102 +1,5 @@
 import {loadGeoJSON, checkSector, mod, rgba} from "/scripts/utils.js";
-
-// Returns style associated with a transport line
-export function getTransportStyle(lineWidth, radius, shape, gameConfig){
-    return (color, highlighted=false)=>{
-        const highlightFactor=highlighted ? 4 : 0;
-        return function(feature,resolution){
-            const type = feature.get("type");
-            if (type=="line"){
-                return new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: color,
-                        width: lineWidth + highlightFactor,
-                    }),
-                });
-            }
-            else if(type=="station"){
-                const team = feature.get('team');
-                const teamColor = rgba(...feature.get('team_color'));
-                
-                if(shape=="circle"){
-                    return new ol.style.Style({
-                        image: new ol.style.Circle({
-                            fill: new ol.style.Fill({
-                                color: teamColor,
-                            }),
-                            stroke: new ol.style.Stroke({
-                                color: color,
-                                width: lineWidth,
-                            }),
-                            radius:radius + highlightFactor,
-                        }),
-                    });
-                }
-                else{
-                    return new ol.style.Style({
-                        image: new ol.style.RegularShape({
-                            fill: new ol.style.Fill({
-                                color: teamColor,
-                            }),
-                            stroke: new ol.style.Stroke({
-                                color: color,
-                                width: lineWidth,
-                            }),
-                            radius:radius + highlightFactor,
-                            angle:(shape=="square")?Math.PI/4:0,
-                            points:(shape=="square")?4:3,
-                        }),
-                    });
-                }
-            }
-        }
-    }
-}
-
-function getPinStyle(outerColor, innerColor, outerRadius, InnerRadius, lineWidth, lineColor){
-    const ratio = 2;
-    const alpha = Math.asin(1/ratio);
-    return new ol.style.Style({
-        renderer: (coordinates, state)=>{
-            const [x,y] = coordinates;
-            const ctx = state.context;
-            
-            const [x_c, y_c] = [x, y-ratio*outerRadius];
-            
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.arc(x_c,y_c,outerRadius,-Math.PI-alpha,0+alpha,false);
-            ctx.lineTo(x, y)
-            
-            ctx.fillStyle=outerColor;
-            ctx.fill();
-            ctx.lineWidth = lineWidth;
-            ctx.strokeStyle=lineColor;
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.arc(x_c,y_c,InnerRadius,0,2*Math.PI,false);
-            ctx.fillStyle=innerColor;
-            ctx.fill();
-            ctx.strokeStyle=lineColor;
-            ctx.stroke();
-            
-        },
-    });
-}
-
-function addressStyle(lineColor, highlighted=false){
-    const highlightFactor=highlighted ? 6 : 0;
-    return function(feature,resolution){
-        const lineWidth = 3;
-        const radius = 10;
-        const innerRadius = 4;
-        const teamColor = rgba(...feature.get('team_color'));
-        const ownerColor = rgba(...feature.get('owner_color'));
-        
-        return getPinStyle(ownerColor,teamColor,radius+highlightFactor,innerRadius+highlightFactor,lineWidth,lineColor);
-    }
-}
+import {getTransportStyle, addressStyle} from "/scripts/ol_styles.js";
 
 function populateStations(library,gameConfig,stationsFeaturesPromise,clipGeometry){
     return stationsFeaturesPromise.then((stationsFeatures)=>{
@@ -255,22 +158,22 @@ export function buildLibrary(game, clipGeometry){
     const transportDict={
         METRO: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(4,6,'circle'),
+            style: getTransportStyle(8,12,'circle'),
             lines:{},
         },
         RER: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(6,10,'square'),
+            style: getTransportStyle(12,20,'square'),
             lines:{},
         },
         TRAMWAY: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(5,8,'triangle'),
+            style: getTransportStyle(10,16,'triangle'),
             lines:{},
         },
         AUTRE: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(4,6,'triangle'),
+            style: getTransportStyle(8,12,'triangle'),
             lines:{},
         },
     }
