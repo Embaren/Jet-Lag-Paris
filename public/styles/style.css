@@ -12,7 +12,7 @@ body{
     autocomplete:"off";
     margin:0;
     height:100%;
-    font-size:2rem;
+    font-size:1rem;
 }
 
 #mapDiv{
@@ -27,7 +27,7 @@ body{
     color:var(--ol-background-color);
     top:.5em;
     right:.5em;
-    font-size:3rem;
+    font-size:1.5rem;
 }
 .ol-visibility button{
     width:100%;
@@ -48,7 +48,7 @@ body{
     transform: translateX(-50%);
     padding-left:.5rem;
     padding-right:.5rem;
-    font-size:3rem;
+    font-size:2rem;
 }
 
 .dot {
@@ -61,10 +61,10 @@ body{
 .popover{
     max-width: 60cqw;
     width: 60cqw;
-    font-size:2rem;
+    font-size:1rem;
 }
 .popover-header{
-    font-size:1em;
+    font-size:1.5rem;
 }
 
 h1{

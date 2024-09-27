@@ -158,22 +158,22 @@ export function buildLibrary(game, clipGeometry){
     const transportDict={
         METRO: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(8,12,'circle'),
+            style: getTransportStyle('METRO'),
             lines:{},
         },
         RER: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(12,20,'square'),
+            style: getTransportStyle('RER'),
             lines:{},
         },
         TRAMWAY: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(10,16,'triangle'),
+            style: getTransportStyle('TRAMWAY'),
             lines:{},
         },
         AUTRE: {
             layers: new ol.layer.Group({layers:[]}),
-            style: getTransportStyle(8,12,'triangle'),
+            style: getTransportStyle('AUTRE'),
             lines:{},
         },
     }

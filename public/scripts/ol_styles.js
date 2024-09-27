@@ -1,7 +1,33 @@
 import {rgba} from "/scripts/utils.js";
 
 // Returns style associated with a transport line
-export function getTransportStyle(lineWidth, radius, shape){
+export function getTransportStyle(mode){
+    const parameters = {};
+    switch(mode){
+        case "METRO":
+            parameters['lineWidth']=6;
+            parameters['radius']=9;
+            parameters['shape']='circle';
+        break;
+        case "RER":
+            parameters['lineWidth']=9;
+            parameters['radius']=15;
+            parameters['shape']='square';
+        break;
+        case "TRAMWAY":
+            parameters['lineWidth']=7;
+            parameters['radius']=12;
+            parameters['shape']='triangle';
+        break;
+        case "AUTRE":
+            parameters['lineWidth']=6;
+            parameters['radius']=9;
+            parameters['shape']='triangle';
+        break;
+    }
+    const lineWidth = parameters['lineWidth'];
+    const radius = parameters['radius'];
+    const shape = parameters['shape'];
     return (color, highlighted=false)=>{
         const highlightFactor=highlighted ? 2 : 1;
         return function(feature,resolution){
@@ -138,8 +164,8 @@ export function getClientStyle(client){
 
 export function getPlayerStyle(img,teamColor){
     
-    const baseRadius = 30;
-    const lineWidth = 10;
+    const baseRadius = 20;
+    const lineWidth = 8;
     
     return (color=null, highlighted=false)=>{
         
