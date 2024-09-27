@@ -86,9 +86,9 @@ export function getPinStyle(outerColor, innerColor, outerRadius, InnerRadius, li
 }
 
 export function addressStyle(color, highlighted=false){
-    const baseRadius = 40;
-    const baseInnerRadius = 16;
-    const lineWidth = 10;
+    const baseRadius = 20;
+    const baseInnerRadius = 8;
+    const lineWidth = 5;
     const highlightFactor=highlighted ? 2 : 1;
     return function(feature,resolution){
         const teamColor = rgba(...feature.get('team_color'));
@@ -99,8 +99,8 @@ export function addressStyle(color, highlighted=false){
 }
 
 export function getClientStyle(client){
-    const radius = 30;
-    const lineWidth = 15;
+    const radius = 15;
+    const lineWidth = 10;
     const lineColor = 'white';
     return (color, highlighted=false)=>{
         return new ol.style.Style({
@@ -138,8 +138,8 @@ export function getClientStyle(client){
 
 export function getPlayerStyle(img,teamColor){
     
-    const lineWidth = 10;
     const baseRadius = 30;
+    const lineWidth = 10;
     
     return (color=null, highlighted=false)=>{
         

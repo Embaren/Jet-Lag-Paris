@@ -300,9 +300,18 @@ export class Game{
             
             game.updateTrackingPermission(true);
             
-            const xy = ol.proj.fromLonLat([pos.coords.longitude,pos.coords.latitude])
+            const xy = ol.proj.fromLonLat([pos.coords.longitude,pos.coords.latitude]);
             
-            const newLocation = {...pos.coords.toJSON()}
+            var newLocation = {};
+            if(pos.coords.toJSON){
+                newLocation = {...pos.coords.toJSON()};
+            }
+            else{
+                for(let key in pos.coords){
+                    newLocation[key] = pos.coords[key];
+                }
+            }
+            
             newLocation.x = xy[0];
             newLocation.y = xy[1];
             newLocation.timestamp = pos.timestamp;
