@@ -78,7 +78,7 @@ La station entière est fermée, empêchant la desserte à toutes les lignes pas
 
 #### Description
 
-Le passage par le quai choisi force l'évacuation. Le joueur impacté ne peut continuer son trajet et doit ne peut pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station.
+Le passage par le quai choisi force l'évacuation. Le joueur impacté ne peut continuer son trajet et ne peut pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station.
 
 #### Coût
 
@@ -86,7 +86,7 @@ Le passage par le quai choisi force l'évacuation. Le joueur impacté ne peut co
 - RER : _n_ points
 - Tramway & autre : _n_ points
 
-### Grêve des conducteurs - n points
+### Grève des conducteurs - n points
 
 #### Description
 
