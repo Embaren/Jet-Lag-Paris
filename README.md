@@ -90,7 +90,7 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   
   ##### Description
   
-  La cérémonie d'ouverture des JO a lieu sur et sous la Seine, coupant toutes les lignes la traversant. La seule option pour passer d'une rive à l'autre est de passer à pieds par un pont.
+  La cérémonie d'ouverture des JO a lieu sur et sous la Seine, coupant toutes les lignes la traversant. La seule option pour passer d'une rive à l'autre est de passer à pied par un pont.
   
   ##### Coût
   
