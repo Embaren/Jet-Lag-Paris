@@ -10,7 +10,7 @@ _n_ joueurs sont répartis en _n_ équipes. Chaque équipe se voit associer un s
 
 L'objectif est de voler les postes de contrôle des équipes adverses pour marquer un maximum de points. L'équipe ayant le plus de points à la fin du temps réglementaire sera déclarée vainqueure.
 
-Chaque équipe débute la partie avec _n_ points. Les points peuvent également être consommés pour acheter des pièges à la boutique permettant de limiter l'usage des transports pour les adversaires.
+Chaque équipe débute la partie avec _n_ points. Les points peuvent également être consommés pour acheter des pouvoirs à la boutique permettant de limiter l'usage des transports pour les adversaires ou de se protéger.
 
 Chaque joueur est traqué par GPS. Sa position est toujours révélée aux joueurs de sa propre équipe. S'il rejoint un secteur ennemi, sa position est alors également partagée à l'équipe associée. La position d'un joueur n'est jamais visible par une équipe adverse s'il est au sein de son propre secteur, de la zone neutre ou d'un secteur d'une équipe tierce.
 
@@ -36,85 +36,187 @@ Chaque poste de contrôle capturé rapporte _n_ points à son équipe.
 
 ## Boutique
 
-Lorsque _tous les joueurs d'une équipe ?_ sont situés dans leur propre secteur, ils peuvent décider de dépenser une partie de leur points pour acheter des pièges.
+Lorsque _tous les joueurs d'une équipe ?_ sont situés dans leur propre secteur, ils peuvent décider de dépenser une partie de leurs points pour acheter des pouvoirs.
 
-Sauf contre-indication, ces pièges sont permanents et restent en vigueur jusqu'à la fin de la journée.
+Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu'à la fin de la journée.
 
-### Quais en travaux
+### Incidents
 
-#### Description
+  Les incidents sont des pouvoirs s'appliquant à des stations ou des lignes de transports. Ils ne peuvent être placés par une équipe que sur des points situés au sein de sa propre zone. Les effets des incidents ne s'appliquent alors qu'aux équipes adverses mais pas aux alliés.
 
-Les quais d'une ligne à une station choisie sont fermés. Il reste possible de traverser sans s'arrêter, mais il est interdit d'y embarquer ou débarquer.
+  #### Station fermée
+  
+  ##### Description
+  
+  La station entière est fermée, empêchant la desserte à toutes les lignes passant par la station. Les correspondances sont donc impossibles, et il est impossible d'entrer ou de sortir à la station.
+  
+  ##### Coût
+  
+  - _n_ points par ligne de métro, _m_ points par ligne de RER et _p_ points par ligne de tramway
+  
+  #### Evacuation d'urgence
+  
+  ##### Description
+  
+  Le passage par le quai choisi force l'évacuation. Le joueur impacté ne peut continuer son trajet et ne peut pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station.
+  
+  ##### Coût
+  
+  - Métro : _n_ points
+  - RER : _n_ points
+  - Tramway & autre : _n_ points
 
-#### Coût
+### Evénements
 
-- Métro : _n_ points
-- RER : _n_ points
-- Tramway & autre : _n_ points
+  Les événements affectent toutes les joueurs et toutes les équipes, qu'ils soient situés dans leur propre zone ou non. Les événements sont temporaires.
 
-### Quais éboulés - n points
+  #### Grève des conducteurs
+  
+  ##### Description
+  
+  La ligne choisie est inaccessible sur **tout** son parcours à tous les joueurs.
+  
+  ##### Coût
+  
+  - Métro : _n_ points
+  - RER : _n_ points
+  - Tramway & autre : _n_ points
 
-#### Description
+  ##### Durée
 
-Les quais d'une ligne à une station choisie se sont effondrés, interrompant le trafic. Il n'est plus possible ni d'y embarquer ou débarquer, ni de traverser. Il faut donc sortir à la station précédente.
+  - _n_ minutes
 
-#### Coût
+  #### Cérémonie d'ouverture souterraine
+  
+  ##### Description
+  
+  La cérémonie d'ouverture des JO a lieu sur et sous la Seine, coupant toutes les lignes la traversant. La seule option pour passer d'une rive à l'autre est de passer à pieds par un pont.
+  
+  ##### Coût
+  
+  - _n_ points
 
-- Métro: _n_ points
-- RER: _n_ points
-- Tramway & autre : _n_ points
+  ##### Durée
 
-### Station fermée - n points
+  - _n_ minutes
 
-#### Description
+### Malédictions
 
-La station entière est fermée, empêchant la desserte à toutes les lignes passant par la station. Les correspondances sont donc impossibles.
+  Les malédictions sont des pouvoirs ciblant un unique joueur adverse. Celui-ci n'est sous l'effet des malédictions que lorsqu'il sort de son territoire ou du territoire neutre.
 
-#### Coût
+  #### Photomaton
+  
+  ##### Description
 
-- _n_ points
+  Le joueur ciblé ne peut plus s'arrêter aux stations ayant des noms de personnalité (exemples : Denfert-Rochereau, Montparnasse-Bienvenüe).
+  
+  ##### Coût
+  
+  - _n_ points
 
-### Evacuation d'urgence - n points
+  #### Claustrophobie
+  
+  ##### Description
 
-#### Description
+  Le joueur ciblé ne peut plus emprunter les sorties portant un numéro pair. Il est donc contraint d'utiliser les sorties impaires.
+  
+  ##### Coût
+  
+  - _n_ points
 
-Le passage par le quai choisi force l'évacuation. Le joueur impacté ne peut continuer son trajet et ne peut pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station.
+  #### Première classe
+  
+  ##### Description
 
-#### Coût
+  Vieille habitude bourgeoise, le joueur ciblé continue de chercher les voitures de première classe. Il utilise donc systématiquement la voiture de tête d'une rame.
+  
+  ##### Coût
+  
+  - _n_ points
 
-- Métro : _n_ points
-- RER : _n_ points
-- Tramway & autre : _n_ points
+  #### Sportif
+  
+  ##### Description
 
-### Grève des conducteurs - n points
+  Le joueur ciblé prépare consciencieusement son prochain trail et refuse donc de prendre les escalators, l'ascenseur ou les tapis roulants. Il n'utilise plus que les escaliers.
+  
+  ##### Coût
+  
+  - _n_ points
 
-#### Description
+  #### Daltonien
+  
+  ##### Description
 
-Pendant _n_ minutes, la ligne choisie est inaccessible sur **tout** son parcours à tous les joueurs (y compris l'équipe à l'origine de la grêve).
+  Le joueur doit passer son téléphone en monochrome pour le reste de la partie.
+  
+  ##### Coût
+  
+  - _n_ points
 
-#### Coût
+  #### Grand prix de poésie
+  
+  ##### Description
 
-- Métro : _n_ points
-- RER : _n_ points
-- Tramway & autre : _n_ points
+  Dans un élan d'allitération, le joueur ne peut plus entrer ou s'arrêter dans une station commençant par une voyelle. Seul le premier mot compte.
+  
+  ##### Coût
+  
+  - _n_ points
 
-### Investissement dans les services publics - n points
+  #### Goût du risque
+  
+  ##### Description
 
-#### Description
+  Lors de son prochain trajet, le joueur ciblé tire un dé à 10 faces. Il est alors contraint de voyager du nombre exact d'arrêts indiqué par le dé. Si la valeur du dé est inférieur au nombre d'arrêts possible, la malédiction est reportée à son déplacement suivant.
+  
+  ##### Coût
+  
+  - _n_ points
 
-Cible une station ou une ligne. Tous les effets ayant été appliqués à celle-ci sont annulés pour toutes les équipes. Cet achat ne protège pas des futurs pièges posés sur la cible désignée.
+### Protections
 
-#### Coût
+  Les protections sont des pouvoirs positifs venant contrer malédictions et incidents.
 
-- Station : _n_ points
-- Ligne : _n_ points
+  #### Investissement dans les services publics
+  
+  ##### Description
+  
+  Cible une station ou une ligne. Tous les incidents ayant été appliqués à celle-ci prennent fin pour toutes les équipes. Cette protection ne protège pas des futurs incidents posés sur la cible désignée, ou des malédictions.
+  
+  ##### Coût
+  
+  - Station : _n_ points
+  - Ligne : _n_ points
+  
+  #### Rééquilibrage des énergies
+  
+  ##### Description
+  
+  Grâce à un nouveau soin quantique, le joueur choisi se voit soulagé d'une malédiction au choix. Il est alors immunisé à celle-ci pour le reste de la partie.
+  
+  ##### Coût
+  
+  - Station : _n_ points
+  - Ligne : _n_ points
+  
+  #### Grand taux vibratoire
+  
+  ##### Description
+  
+  Le taux vibratoire du joueur choisi atteint les 20000 unités Bovis ! Au cours des _n_ prochaines minutes, aucune nouvelle malédiction ne peut le cibler.
+  
+  ##### Coût
+  
+  - Station : _n_ points
+  - Ligne : _n_ points
 
-### Interruption du traqueur ?
-
-#### Description
-
-Désactive le traqueur d'un joueur pendant _n_ minutes.
-
-#### Coût
-
-- _n_ points
+  #### Brouilleur
+  
+  ##### Description
+  
+  Désactive le traqueur d'un joueur pendant _n_ minutes.
+  
+  ##### Coût
+  
+  - _n_ points
