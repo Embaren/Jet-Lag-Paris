@@ -45,6 +45,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   Les incidents sont des pouvoirs s'appliquant à des stations ou des lignes de transports. Ils ne peuvent être placés par une équipe que sur des points situés au sein de sa propre zone. Les effets des incidents ne s'appliquent alors qu'aux équipes adverses mais pas aux alliés.
 
   #### Station fermée
+
+  ![fermeture](https://github.com/user-attachments/assets/a9e49376-23e7-47ef-9074-1c3989243455)
   
   ##### Description
   
@@ -55,6 +57,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points par ligne de métro, _m_ points par ligne de RER et _p_ points par ligne de tramway
   
   #### Evacuation d'urgence
+
+  ![evacuation](https://github.com/user-attachments/assets/ede910a1-beb3-465b-8e4c-e5612d65d3d0)
   
   ##### Description
   
@@ -71,6 +75,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   Les événements affectent toutes les joueurs et toutes les équipes, qu'ils soient situés dans leur propre zone ou non. Les événements sont temporaires.
 
   #### Grève des conducteurs
+
+  ![greve](https://github.com/user-attachments/assets/4b96f4a8-9dc1-49b4-89e3-0397a3a32658)
   
   ##### Description
   
@@ -87,6 +93,9 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ minutes
 
   #### Cérémonie d'ouverture souterraine
+
+  ![ceremonie](https://github.com/user-attachments/assets/439e3ef2-39d4-43b0-802b-5725dd5686cc)
+
   
   ##### Description
   
@@ -105,6 +114,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   Les malédictions sont des pouvoirs ciblant un unique joueur adverse. Celui-ci n'est sous l'effet des malédictions que lorsqu'il sort de son territoire ou du territoire neutre.
 
   #### Photomaton
+
+  ![photomaton](https://github.com/user-attachments/assets/1431cf07-d13b-4d6c-b02b-4f2e2692cb36)
   
   ##### Description
 
@@ -115,6 +126,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points
 
   #### Claustrophobie
+
+  ![claustrophobie](https://github.com/user-attachments/assets/c7fe2069-2968-4c2c-ab40-ae112a7a78bb)
   
   ##### Description
 
@@ -125,6 +138,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points
 
   #### Première classe
+
+  ![premiere](https://github.com/user-attachments/assets/a8517910-37bd-4fee-a917-ca58ff01453d)
   
   ##### Description
 
@@ -135,7 +150,9 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points
 
   #### Sportif
-  
+
+  ![sportif](https://github.com/user-attachments/assets/81bdeea6-f5d4-40e5-9946-8cb280d50ded)
+
   ##### Description
 
   Le joueur ciblé prépare consciencieusement son prochain trail et refuse donc de prendre les escalators, l'ascenseur ou les tapis roulants. Il n'utilise plus que les escaliers.
@@ -145,6 +162,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points
 
   #### Daltonien
+
+  ![daltonien](https://github.com/user-attachments/assets/f73532b3-ece1-421b-8a85-c0e600f9f9e9)
   
   ##### Description
 
@@ -155,7 +174,9 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points
 
   #### Grand prix de poésie
-  
+
+  ![poesie](https://github.com/user-attachments/assets/160db308-244b-4021-aaa3-79dd046e79d1)
+
   ##### Description
 
   Dans un élan d'allitération, le joueur ne peut plus entrer ou s'arrêter dans une station commençant par une voyelle. Seul le premier mot compte.
@@ -165,11 +186,13 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - _n_ points
 
   #### Goût du risque
+
+  ![risque](https://github.com/user-attachments/assets/a1901522-0526-4a06-851c-5879622c6e48)
   
   ##### Description
 
   Lors de son prochain trajet, le joueur ciblé tire un dé à 10 faces. Il est alors contraint de voyager du nombre exact d'arrêts indiqué par le dé. Si la valeur du dé est inférieur au nombre d'arrêts possible, la malédiction est reportée à son déplacement suivant.
-  
+
   ##### Coût
   
   - _n_ points
@@ -178,7 +201,9 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
 
   Les protections sont des pouvoirs positifs venant contrer malédictions et incidents.
 
-  #### Investissement dans les services publics
+  #### Investissement dans les transports publics
+
+  ![investissement](https://github.com/user-attachments/assets/a756b0e4-6b18-4d7a-81c5-86f2fa11ea2f)
   
   ##### Description
   
@@ -190,6 +215,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - Ligne : _n_ points
   
   #### Rééquilibrage des énergies
+
+  ![equilibre](https://github.com/user-attachments/assets/2cca6aa1-255f-4e7a-9821-1232453ed54f)
   
   ##### Description
   
@@ -201,7 +228,9 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   - Ligne : _n_ points
   
   #### Grand taux vibratoire
-  
+
+  ![vibratoire](https://github.com/user-attachments/assets/89c0ffbd-baad-4fb0-8043-78b233444b6f)
+
   ##### Description
   
   Le taux vibratoire du joueur choisi atteint les 20000 unités Bovis ! Au cours des _n_ prochaines minutes, aucune nouvelle malédiction ne peut le cibler.
@@ -213,6 +242,8 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
 
   #### Brouilleur
   
+  ![brouilleur](https://github.com/user-attachments/assets/cf022ed5-4d89-4c30-a810-1828c5252f96)
+
   ##### Description
   
   Désactive le traqueur d'un joueur pendant _n_ minutes.
