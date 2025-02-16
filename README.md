@@ -62,7 +62,7 @@ Sauf contre-indication, ces pouvoirs sont permanents et restent en vigueur jusqu
   
   ##### Description
   
-  Le passage par le quai choisi force l'évacuation. Le joueur impacté ne peut continuer son trajet et ne peut pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station.
+  Le passage par le quai choisi force l'évacuation. Les voyageurs ne peuvent pas continuer leur trajet et ne peuvent pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station.
   
   ##### Coût
   
