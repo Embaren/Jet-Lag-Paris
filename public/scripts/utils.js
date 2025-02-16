@@ -22,6 +22,20 @@ function loadTextFileAjaxSync(path, mimeType){
     }
 }
 
+export function loadSVGElement(path){
+	const xhr = new XMLHttpRequest();
+	xhr.open("GET",path,false);
+	return new Promise((resolve,reject)=>{
+		xhr.onload = function(e) {
+		  resolve(xhr.responseXML.documentElement);
+		};
+		xhr.onerror = function(e) {
+		  reject(e);
+		};
+		xhr.send(null);
+	});
+}
+
 // Loads synchronously a JSON file
 export function loadJSONSync(path) {
     // Load json file;
@@ -87,4 +101,11 @@ export function msToTime(s,precision="ms") {
         default:
             return hrs + ':' + mins + ':' + secs + '.' + ms;
     }
+}
+
+export function document_createBoldNode(str){
+    const text_node = document.createTextNode(str);
+    const b = document.createElement("b");
+    b.appendChild(text_node);
+    return b;
 }

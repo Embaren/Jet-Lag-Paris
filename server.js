@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const http = require('http');
-const server = http.createServer(app);
+var server = http.createServer(app);
+
+const socketio = require('socket.io');
 
 const {loadJSONSync} = require('./scripts/utils_back.js');
 const {CommandPrompt} = require('./scripts/commands_back.js');
@@ -11,26 +13,34 @@ const PORT = process.env.PORT || 3000;
 
 const gameConfig = loadJSONSync("./config.json");
 
-const game = new Game(gameConfig, server);
-
-// Command interface
-const commandPrompt = new CommandPrompt(game);
-commandPrompt.prompt();
-
-game.new();
-
 app.use(express.static(__dirname + "/public/"));
+
+app.get('/admin', (req,res)=>{
+    res.sendFile(__dirname + '/admin.html');
+});
 
 app.get('/', (req,res)=>{
     res.sendFile(__dirname + '/index.html');
 });
 
-server.listen(PORT, ()=>{
-    console.log(`listening on :${PORT}`);
-});
-server.restart=()=>{
-    server.close();
-    server.listen(PORT, ()=>{
-        console.log(`listening on :${PORT}`);
-    });
+function startServer(callback=null){
+	server = http.createServer(app);
+	
+	server.start = startServer;
+	
+	server.listen(PORT, ()=>{
+		console.log(`listening on :${PORT}`);
+		if(callback){
+			callback();
+		}
+	});
 }
+
+function getServer(){
+	return server;
+}
+
+startServer();
+
+const game = new Game(gameConfig, getServer);
+game.new();

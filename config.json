@@ -62,7 +62,7 @@
         "neutralRadius": 500,
         "gameCenter": [
             261350,
-            6251150
+            6251120
         ],
         "clipPath": "/resources/geojsons/paris.geojson",
         "linesPath": "/resources/geojsons/trains.geojson",
@@ -82,5 +82,149 @@
         "maxUpdateRange": 250
     },
     "nAddressesPerTeam": 5,
-    "initialPoints": 5
+    "initialPoints": 20,
+    "pointsPerCapture": 5,
+	"powers": {
+		"athlete":{
+			"name": "Athlète",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": null,
+			"token": "/resources/images/powers/athlete.svg",
+			"description": "Le joueur ciblé prépare consciencieusement son prochain trail et refuse donc de prendre les escalators, l'ascenseur ou les tapis roulants. Il n'utilise plus que les escaliers."
+		},
+		"balance":{
+			"name": "Rééquilibrage des énergies",
+			"cost": 10,
+			"type": "defence",
+			"target": "curse",
+			"endingCondition": null,
+			"token": "/resources/images/powers/balance.svg",
+			"description": "Grâce à un nouveau soin quantique, le joueur choisi se voit soulagé d'une malédiction au choix. Il est alors immunisé à celle-ci pour le reste de la partie."
+		},
+		"ceremony":{
+			"name": "Cérémonie d'ouverture souterraine",
+			"cost": 10,
+			"type": "event",
+			"target": "none",
+			"endingCondition": "duration",
+			"duration": 10000,
+			"token": "/resources/images/powers/ceremony.svg",
+			"description": "La cérémonie d'ouverture des JO a lieu sur et sous la Seine, coupant toutes les lignes la traversant. La seule option pour passer d'une rive à l'autre est de passer à pied par un pont."
+		},
+		"claustrophobia":{
+			"name": "Claustrophobe",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": null,
+			"token": "/resources/images/powers/claustrophobia.svg",
+			"description": "Le joueur ciblé ne peut plus emprunter les sorties portant un numéro pair. Il est donc contraint d'utiliser les sorties impaires."
+		},
+		"closing":{
+			"name": "Station fermée",
+			"cost": 5,
+			"type": "incident",
+			"target": "station",
+			"endingCondition": null,
+			"token": "/resources/images/powers/closing.svg",
+			"description": "La station entière est fermée, empêchant la desserte à toutes les lignes passant par la station. Les correspondances sont donc impossibles, et il est impossible d'entrer ou de sortir à la station."
+		},
+		"colorblind":{
+			"name": "Daltonien",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": null,
+			"token": "/resources/images/powers/colorblind.svg",
+			"description": "Le joueur doit passer son téléphone en monochrome pour le reste de la partie."
+		},
+		"evacuation":{
+			"name": "Evacuation d'urgence",
+			"cost": 10,
+			"type": "incident",
+			"target": "platform",
+			"endingCondition": null,
+			"token": "/resources/images/powers/athlete.svg",
+			"description": "Le passage par le quai choisi force l'évacuation. Les voyageurs ne peuvent pas continuer leur trajet et ne peuvent pas reprendre de transports publics avant d'avoir marché jusqu'à une autre station."
+		},
+		"first":{
+			"name": "Première classe",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": null,
+			"token": "/resources/images/powers/first.svg",
+			"description": "Vieille habitude bourgeoise, le joueur ciblé continue de chercher les voitures de première classe. Il utilise donc systématiquement la voiture de tête d'une rame."
+		},
+		"gambler":{
+			"name": "Goût du risque",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": "manual",
+			"dice":10,
+			"token": "/resources/images/powers/gambler.svg",
+			"description": "Lors de son prochain trajet, le joueur ciblé tire un dé à 10 faces. Il est alors contraint de voyager du nombre exact d'arrêts indiqué par le dé. Si la valeur du dé est inférieur au nombre d'arrêts possible, la malédiction est reportée à son déplacement suivant."
+		},
+		"investment":{
+			"name": "Investissement dans les services publics",
+			"cost": 10,
+			"type": "defence",
+			"target": "station",
+			"endingCondition": "duration",
+			"duration": 600000,
+			"token": "/resources/images/powers/investment.svg",
+			"description": "Cible une station ou une ligne. Tous les incidents ayant été appliqués à celle-ci prennent fin pour toutes les équipes. Cette protection protège également des futurs incidents pendant les 10 minutes suivant sa mise en place."
+		},
+		"jammer":{
+			"name": "Brouilleur",
+			"cost": 10,
+			"type": "defence",
+			"target": "player",
+			"endingCondition": "duration",
+			"duration": 600000,
+			"token": "/resources/images/powers/jammer.svg",
+			"description": "Désactive le traqueur d'un joueur pendant n minutes."
+		},
+		"photobooth":{
+			"name": "Photomaton",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": null,
+			"token": "/resources/images/powers/photobooth.svg",
+			"description": "Le joueur ciblé ne peut plus s'arrêter aux stations ayant des noms de personnalité (exemples : Denfert-Rochereau, Montparnasse-Bienvenüe)."
+		},
+		"poesy":{
+			"name": "Grand prix de poésie",
+			"cost": 5,
+			"type": "curse",
+			"target": "player",
+			"endingCondition": null,
+			"token": "/resources/images/powers/poesy.svg",
+			"description": "Dans un élan d'allitération, le joueur ne peut plus entrer ou s'arrêter dans une station commençant par une voyelle. Seul le premier mot compte."
+		},
+		"strike":{
+			"name": "Grève des conducteurs",
+			"cost": 10,
+			"type": "event",
+			"target": "line",
+			"endingCondition": "duration",
+			"duration": 1800000,
+			"token": "/resources/images/powers/strike.svg",
+			"description": "La ligne choisie est inaccessible sur tout son parcours à tous les joueurs."
+		},
+		"vibratory":{
+			"name": "Grand taux vibratoire",
+			"cost": 10,
+			"type": "defence",
+			"target": "player",
+			"endingCondition": "duration",
+			"duration": 600000,
+			"token": "/resources/images/powers/vibratory.svg",
+			"description": "Le taux vibratoire du joueur choisi atteint les 20000 unités Bovis ! Au cours des n prochaines minutes, aucune nouvelle malédiction ne peut le cibler."
+		}
+	}
 }

@@ -6,22 +6,25 @@
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>JET LAG Paris</title>
+    <title>JET LAG Paris - Admin</title>
     
     <script src="/socket.io/socket.io.js" type="text/javascript" charset="utf-8"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ol@v10.1.0/dist/ol.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.1.0/ol.css">
-
+	
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik+Scribble">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+Symbols+2">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nanum+Myeongjo">
-    <link rel="stylesheet" href="/styles/style.css">
+    <link rel="stylesheet" href="/styles/adminstyle.css">
 </head>
 
 <body>
     <!--<h1>JET LAG Paris v0.1</h1>-->
+	<div id="logsDiv"></div>
+	<div id="promptDiv">
+		<input type="text" id="promptInput" name="prompt" disabled />
+		<button id="promptButton" disabled>Envoyer</button>
+	</div>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-	<script type="module" src="/scripts/main.js"></script>
+	<script type="module" src="/scripts/admin.js"></script>
 </body>

@@ -1,0 +1,91 @@
+html{
+    height:100%;
+}
+
+body{
+    font-family:"Rubik", sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background-color:#000000;
+    autocomplete:"off";
+    margin:0;
+    height:100%;
+    font-size:1rem;
+	color:white;
+}
+
+table, th, td {
+    border: 1px solid;
+    border-collapse: collapse;
+    border-color: white;
+}
+
+#logsDiv{
+	text-align:left;
+	width:90%;
+	bottom:3em;
+	position:absolute;
+    overflow-y:auto;
+    max-height:calc(100% - 4em);
+}
+#logsDiv table{
+	width:100%;
+}
+#logsDiv table tbody{
+	width:100%;
+}
+#logsDiv table tbody td{
+	border: none;
+}
+.logIdCell{
+	text-align:right;
+	width:4em;
+	padding-right:1em;
+	vertical-align: top
+}
+.logCell{
+}
+
+.defaultLog{
+	color:white;
+}
+.inputLog{
+	color:lightGray;
+}
+.errorLog{
+	color:red;
+}
+.globalLog{
+	color:cyan;
+}
+.metaLog{
+	color:orange;
+}
+
+#promptDiv{
+	text-align:left;
+	width:100%;
+	display:flex;
+	flex-direction:row;
+	justify-content:center;
+	position:fixed;
+	bottom:0;
+	margin-top:1em;
+	margin-bottom:1em;
+}
+#promptInput{
+	width:80%;
+}
+#promptButton{
+	width:10%;
+}
+
+span.pre{
+	margin-left:1em;
+}
+
+button:disabled:hover{
+    background: color-mix(in srgb, white 25%, transparent);
+    opacity: 1;
+}

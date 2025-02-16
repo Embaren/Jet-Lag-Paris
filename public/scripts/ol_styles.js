@@ -28,9 +28,10 @@ export function getTransportStyle(mode){
     const lineWidth = parameters['lineWidth'];
     const radius = parameters['radius'];
     const shape = parameters['shape'];
-    return (color, highlighted=false)=>{
+    return (highlighted=false, selected=false)=>{
         const highlightFactor=highlighted ? 2 : 1;
         return function(feature,resolution){
+			const color = selected ? 'white' : feature.get('line_color');
             const type = feature.get("type");
             if (type=="line"){
                 return new ol.style.Style({

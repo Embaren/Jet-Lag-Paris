@@ -28,6 +28,7 @@ function populateStations(library,gameConfig,stationsFeaturesPromise,clipGeometr
                         line_id: indice,
                         team: checkSector(coords, gameConfig),
                         team_color: teamColor,
+                        line_color: library.transports[mode].lines[indice].color,
                     });
                     library.transports[mode].lines[indice]["features"].push(newFeature);
                     // Add station to stations dict
@@ -46,6 +47,7 @@ function populateStations(library,gameConfig,stationsFeaturesPromise,clipGeometr
                     line_id: indice,
                     team: checkSector(coords, gameConfig),
                     team_color: teamColor,
+					line_color: library.transports["AUTRE"].lines["FUN"].color,
                 });
                 library.transports["AUTRE"].lines[indice]["features"].push(newFeature);
                 library.stations[name] = new ol.Collection([newFeature]);
@@ -84,7 +86,7 @@ function populateLines(library,linesFeaturesPromise,clipGeometry){
                 const newFeature = new ol.Feature({
                     geometry: feature.getGeometry(),
                     type: 'line',
-                    color: library.transports[mode].lines[indice]['color'],
+                    line_color: library.transports[mode].lines[indice]['color'],
                     mode: mode,
                     line_id: indice,
                 });
@@ -102,6 +104,7 @@ function populateLines(library,linesFeaturesPromise,clipGeometry){
                 const newFeature = new ol.Feature({
                     geometry: feature.getGeometry(),
                     type: 'line',
+                    line_color: library.transports["AUTRE"].lines[indice]['color'],
                     mode: 'AUTRE',
                     line_id: indice,
                 });
@@ -116,7 +119,7 @@ function populateLines(library,linesFeaturesPromise,clipGeometry){
                 });
                 const layer = new ol.layer.Vector({
                     source: source,
-                    style: library.transports[modeKey].style(library.transports[modeKey].lines[key]['color']),
+                    style: library.transports[modeKey].style(),
                 });
                 layer.on('postrender',library.transports[modeKey].layers?.postrenderFn);
                 library.transports[modeKey].layers.getLayers().push(layer);
@@ -201,10 +204,10 @@ export function buildLibrary(game, clipGeometry){
     const linesFeaturesPromise = loadGeoJSON(game.config.terrain.linesPath);
     const stationsFeaturesPromise = loadGeoJSON(game.config.terrain.stationsPath);
 
-    populateLines(library,linesFeaturesPromise,clipGeometry)
-        .then((status)=>{populateStations(library,game.config,stationsFeaturesPromise,clipGeometry);});
+    const transportsPromise = populateLines(library,linesFeaturesPromise,clipGeometry)
+        .then((status)=>{return populateStations(library,game.config,stationsFeaturesPromise,clipGeometry);});
     
     populateAddresses(library, game.config, game.state.addresses);
     
-    return library;
+    return transportsPromise.then(()=>{return library});
 }

@@ -1,6 +1,7 @@
 import {rgba, loadGeoJSON, loadGeoJSONSync} from "/scripts/utils.js";
 import {buildLibrary} from "/scripts/library.js";
 import {Map} from "/scripts/map.js";
+import {Powers} from "/scripts/powers.js";
 import {getClientStyle, getPlayerStyle} from "/scripts/ol_styles.js";
 
 class Client{
@@ -121,17 +122,19 @@ class Players{
 export class Game{
     constructor(io, gameContainer, autorun=true){
         this.io = io;
-        this.socket = io();
+        this.socket = io('/game');
         this.container = gameContainer;
         
         this.tracking = null;
         this.trackingPermission = false;
         this.client = new Client();
         this.players = new Players();
+		this.ready = false;
         
         const game = this;
         if(autorun){
             game.socket.on("disconnect", () => {
+				game.ready = false;
                 game.stopTracking();
                 
                 game.container.innerHTML="";
@@ -151,8 +154,42 @@ export class Game{
         }
         
         this.socket.on('update_player_location',(playerId,loc)=>{
+			if(!game.ready){
+				return;
+			}
             game.players.setPlayerLocation(playerId,loc);
         });
+        
+        this.socket.on('capture',(addressId,teamId)=>{
+			if(!game.ready){
+				return;
+			}
+            game.switchAddress(addressId,teamId);
+			alert("L'équipe "+game.config.teams[teamId].name+" a capturé "+game.library.addresses.features.item(addressId).get('name'));
+        });
+        
+        this.socket.on('give',(points)=>{
+			if(!game.ready){
+				return;
+			}
+            game.updatePoints(points);
+		});
+        
+        this.socket.on('power',(power)=>{
+			
+			if(!game.ready){
+				return;
+			}
+			
+			game.addPower(power);
+		});
+		
+        this.socket.on('complete_power',(powerId,source)=>{
+			if(!game.ready){
+				return;
+			}
+			game.powers.completePower(powerId,source);
+		});
     }
     
     initConfig(){
@@ -209,9 +246,10 @@ export class Game{
         
         const makeRequest = ()=>{
             game.client.updateLastSent();
-            game.socket.emit('identify_client',game.client.playerId,game.client.loc.current,(state,players)=>{
+            game.socket.emit('identify_client',game.client.playerId,game.client.loc.current,(state,players,powers)=>{
                 
                 game.players.initPlayers(players, game.config);
+				game.powers = new Powers(game.config.powers);
                 
                 const mapDiv = document.createElement('div');
                 mapDiv.id = "mapDiv";
@@ -221,19 +259,27 @@ export class Game{
                 const clipGeometry = clipFeature.getGeometry();
                 
                 game.state = state;
-                const library = buildLibrary(game, clipGeometry);
-                game.library = library;
+                const libraryPromise = buildLibrary(game, clipGeometry);
                 
-                const map = new Map(game,'mapDiv',clipFeature,13);
-                game.map = map;
-                
-                game.map.addClippedLayers([
-                    library.transports['RER'].layers,
-                    library.transports['TRAMWAY'].layers,
-                    library.transports['METRO'].layers,
-                    library.transports['AUTRE'].layers,
-                ]);
-                game.map.addLayers([library.addresses.layer,game.players.getLayer(),game.client.getLayer()]);
+				Promise.all([libraryPromise,game.powers.tokensReady]).then((values)=>{
+					game.library = values[0];
+					const map = new Map(game,'mapDiv',clipFeature,13);
+					game.map = map;
+					
+					game.ready = true;
+					
+					game.map.addClippedLayers([
+						game.library.transports['RER'].layers,
+						game.library.transports['TRAMWAY'].layers,
+						game.library.transports['METRO'].layers,
+						game.library.transports['AUTRE'].layers,
+					]);
+					game.map.addLayers([game.library.addresses.layer,game.players.getLayer(),game.client.getLayer()]);
+					
+					powers.forEach((p)=>{game.addPower(p)});
+					//game.powers.fill(powers, ()=>{map.updatePowers()});
+					//map.updatePowers();
+				});
             });
         }
         
@@ -352,4 +398,71 @@ export class Game{
             this.tracking = null;
         }
     }
+	
+	capture(addressId){
+		const game = this;
+		this.socket.emit('capture',addressId,(status)=>{
+			if(status){
+				game.switchAddress(addressId, game.client.teamId);
+			}
+        });
+	}
+	
+	switchAddress(addressId, teamId){
+		const feature = this.library.addresses.features.item(addressId);
+		feature.setProperties({'current_owner':teamId, 'owner_color':this.config.teams[teamId].color});
+	}
+	
+	addPower(power){
+		const game = this;
+		const additionalFn=[];
+		switch(power.powerId){
+			case 'closing':
+				additionalFn.push((power)=>{
+					game.library.stations[power.target].forEach((f)=>{
+						f.set('line_color',game.library.transports[f.get('mode')].lines[f.get('line_id')].color);
+					});
+				});
+			break;
+			case 'strike':
+				additionalFn.push((power)=>{
+					const line = game.library.transports[power.target.mode].lines[power.target.line];
+					line.features.forEach((f)=>{
+						f.set('line_color',line.color);
+					});
+				});
+			break;
+		}
+		game.powers.pushPower(power,(p)=>{additionalFn.forEach((fn)=>{fn(p)});game.map.updatePowers()});
+		if(power.active){
+			game.map.updatePowers();
+			switch(power.powerId){
+				case 'closing':
+					game.library.stations[power.target].forEach((f)=>{
+						f.set('line_color','black');
+					});
+				break;
+				case 'strike':{
+					const line = game.library.transports[power.target.mode].lines[power.target.line];
+					line.features.forEach((f)=>{
+						f.set('line_color','black');
+					});
+				}
+				break;
+			}
+		}
+	}
+	
+	updatePoints(points){
+		this.state.teams[this.client.teamId].points += points;
+		this.map.updateTeamInfo();
+	};
+	
+	buyPower(powerId, target=null){
+		this.socket.emit('buy_power',powerId,target,(result)=>{console.log(result)});
+	};
+	
+	completePower(powerId){
+		this.socket.emit('complete_power',powerId,(result)=>{console.log(result)});
+	};
 }
