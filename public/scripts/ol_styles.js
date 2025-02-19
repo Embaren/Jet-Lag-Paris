@@ -80,7 +80,7 @@ export function getTransportStyle(mode){
     }
 }
 
-export function getPinStyle(outerColor, innerColor, outerRadius, InnerRadius, lineWidth, lineColor){
+export function getPinStyle(outerColor, innerColor, outerRadius, InnerRadius, lineWidth, outerLineColor, innerLineColors){
     const ratio = 2;
     const alpha = Math.asin(1/ratio);
     return new ol.style.Style({
@@ -97,16 +97,19 @@ export function getPinStyle(outerColor, innerColor, outerRadius, InnerRadius, li
             
             ctx.fillStyle=outerColor;
             ctx.fill();
-            ctx.lineWidth = lineWidth;
-            ctx.strokeStyle=lineColor;
+            ctx.lineWidth=lineWidth;
+            ctx.strokeStyle=outerLineColor;
             ctx.stroke();
             
-            ctx.beginPath();
-            ctx.arc(x_c,y_c,InnerRadius,0,2*Math.PI,false);
-            ctx.fillStyle=innerColor;
-            ctx.fill();
-            ctx.strokeStyle=lineColor;
-            ctx.stroke();
+			const n = innerLineColors.length;
+			for(let i=0 ; i<n ; i++){
+				ctx.beginPath();
+				ctx.arc(x_c,y_c,InnerRadius,i*2*Math.PI/n+Math.PI/2,(i+1)*2*Math.PI/n+Math.PI/2,false);
+				ctx.fillStyle=innerColor;
+				ctx.fill();
+				ctx.strokeStyle=innerLineColors[i];
+				ctx.stroke();
+			}
             
         },
     });
@@ -120,8 +123,10 @@ export function addressStyle(color, highlighted=false){
     return function(feature,resolution){
         const teamColor = rgba(...feature.get('team_color'));
         const ownerColor = rgba(...feature.get('owner_color'));
+		
+        const challengersColors = feature.get('challengers_colors').length==0 ? [color] : Array.from(feature.get('challengers_colors'),(c)=>rgba(...c));
         
-        return getPinStyle(ownerColor,teamColor,baseRadius*highlightFactor,baseInnerRadius*highlightFactor,lineWidth*highlightFactor,color);
+        return getPinStyle(ownerColor,teamColor,baseRadius*highlightFactor,baseInnerRadius*highlightFactor,lineWidth*highlightFactor,color,challengersColors);
     }
 }
 

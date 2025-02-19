@@ -901,6 +901,7 @@ export class Controls {
 		const team = feature.get('team');
 		const name = feature.get('name');
 		const currentOwner = feature.get('current_owner');
+		const challengers = feature.get('challengers');
 		const captured = team != currentOwner;
 		const contentDiv = document.createElement("div");
 		{
@@ -916,21 +917,58 @@ export class Controls {
 			p.appendChild(pText);
 		}
 		else{
-			const p = document.createElement("p");
-			contentDiv.appendChild(p);
-			const pText = document.createTextNode("Non capturée.");
-			p.appendChild(pText);
+			
+			{
+				const p = document.createElement("p");
+				contentDiv.appendChild(p);
+				const pText = document.createTextNode("Non capturée.");
+				p.appendChild(pText);
+			}
+			
+			{
+				const p = document.createElement("p");
+				contentDiv.appendChild(p);
+				const pText = document.createTextNode(challengers.length==0 ? "Non contestée." : ("Contestée par : "+Array.from(challengers,(c)=>game.config.teams[c].name).join(', ')+'.'));
+				p.appendChild(pText);
+			}
 			
 			if(game.client.teamId!=team){
-				const captureButton = document.createElement("button");
-				contentDiv.appendChild(captureButton);
-				const captureButtonText = document.createTextNode("CAPTURER");
-				captureButton.appendChild(captureButtonText);
-				captureButton.onclick = ()=>{
-					const addressId = game.state.addresses.findIndex((a)=>{return a.properties.name==name});
-					game.capture(addressId);
-					self.utilsWindow.hide();
-				};
+				
+				if(challengers.includes(game.client.teamId)){
+					{ // Capture button
+						const captureButton = document.createElement("button");
+						contentDiv.appendChild(captureButton);
+						const captureButtonText = document.createTextNode("CAPTURER");
+						captureButton.appendChild(captureButtonText);
+						captureButton.onclick = ()=>{
+							const addressId = game.state.addresses.findIndex((a)=>{return a.properties.name==name});
+							game.capture(addressId);
+							self.utilsWindow.hide();
+						};
+					}
+					{ // Unchallenge button
+						const unchallengeButton = document.createElement("button");
+						contentDiv.appendChild(unchallengeButton);
+						const unchallengeButtonText = document.createTextNode("RENONCER");
+						unchallengeButton.appendChild(unchallengeButtonText);
+						unchallengeButton.onclick = ()=>{
+							const addressId = game.state.addresses.findIndex((a)=>{return a.properties.name==name});
+							game.unchallenge(addressId);
+							self.utilsWindow.hide();
+						};
+					}
+				}
+				else{ // Challenge button
+					const challengeButton = document.createElement("button");
+					contentDiv.appendChild(challengeButton);
+					const challengeButtonText = document.createTextNode("CONTESTER");
+					challengeButton.appendChild(challengeButtonText);
+					challengeButton.onclick = ()=>{
+						const addressId = game.state.addresses.findIndex((a)=>{return a.properties.name==name});
+						game.challenge(addressId);
+						self.utilsWindow.hide();
+					};
+				}
 			}
 		}
 		

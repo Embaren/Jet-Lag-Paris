@@ -168,6 +168,20 @@ export class Game{
 			alert("L'équipe "+game.config.teams[teamId].name+" a capturé "+game.library.addresses.features.item(addressId).get('name'));
         });
         
+        this.socket.on('challenge',(addressId,teamId)=>{
+			if(!game.ready){
+				return;
+			}
+            game.challengeAddress(addressId,teamId);
+        });
+        
+        this.socket.on('unchallenge',(addressId,teamId)=>{
+			if(!game.ready){
+				return;
+			}
+            game.unchallengeAddress(addressId,teamId);
+        });
+        
         this.socket.on('give',(points)=>{
 			if(!game.ready){
 				return;
@@ -216,10 +230,6 @@ export class Game{
             teamDiv.classList.add('team_div');
             teamDiv.style['borderColor']=rgba(...team.color);
             const teamNameSpan = document.createElement('span');
-            //const teamDot = document.createElement('span');
-            //teamDot.classList.add("dot");
-            //teamDot.style['backgroundColor']=rgba(...team.color);
-            //teamNameSpan.appendChild(teamDot);
             teamNameSpan.appendChild(document.createTextNode(team.name));
             teamDiv.appendChild(teamNameSpan);
             teamDivs.push(teamDiv);
@@ -277,8 +287,6 @@ export class Game{
 					game.map.addLayers([game.library.addresses.layer,game.players.getLayer(),game.client.getLayer()]);
 					
 					powers.forEach((p)=>{game.addPower(p)});
-					//game.powers.fill(powers, ()=>{map.updatePowers()});
-					//map.updatePowers();
 				});
             });
         }
@@ -399,6 +407,24 @@ export class Game{
         }
     }
 	
+	challenge(addressId){
+		const game = this;
+		this.socket.emit('challenge',addressId,(status)=>{
+			if(status){
+				game.challengeAddress(addressId, game.client.teamId);
+			}
+        });
+	}
+	
+	unchallenge(addressId){
+		const game = this;
+		this.socket.emit('unchallenge',addressId,(status)=>{
+			if(status){
+				game.unchallengeAddress(addressId, game.client.teamId);
+			}
+        });
+	}
+	
 	capture(addressId){
 		const game = this;
 		this.socket.emit('capture',addressId,(status)=>{
@@ -408,9 +434,32 @@ export class Game{
         });
 	}
 	
+	challengeAddress(addressId, teamId){
+		const feature = this.library.addresses.features.item(addressId);
+		const challengers = feature.get('challengers');
+		const challengers_colors = feature.get('challengers_colors');
+		if(!challengers.includes(teamId)){
+			challengers.push(teamId);
+			challengers_colors.push(this.config.teams[teamId].color);
+		}
+		feature.setProperties({'challengers':challengers,'challengers_colors':challengers_colors});
+	}
+	
+	unchallengeAddress(addressId, teamId){
+		const feature = this.library.addresses.features.item(addressId);
+		const challengers = feature.get('challengers');
+		const challengers_colors = feature.get('challengers_colors');
+		if(challengers.includes(teamId)){
+			const challengerIndex = challengers.indexOf(teamId);
+			challengers.splice(challengerIndex,1);
+			challengers_colors.splice(challengerIndex,1);
+		}
+		feature.setProperties({'challengers':challengers,'challengers_colors':challengers_colors});
+	}
+	
 	switchAddress(addressId, teamId){
 		const feature = this.library.addresses.features.item(addressId);
-		feature.setProperties({'current_owner':teamId, 'owner_color':this.config.teams[teamId].color});
+		feature.setProperties({'current_owner':teamId, 'owner_color':this.config.teams[teamId].color, 'challengers':[], 'challengers_colors':[]});
 	}
 	
 	addPower(power){

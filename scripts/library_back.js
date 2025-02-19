@@ -100,6 +100,8 @@ function getRandomAddressesPromise(addressesPath, gameConfig, clipGeometry){
                                     team_color: gameConfig.teams[team].color,
                                     current_owner: team,
                                     owner_color: gameConfig.teams[team].color,
+                                    challengers: [],
+                                    challengers_colors: [],
                                     name: feature.get("l_adr"),
                                     district: feature.get("c_ar"),
                                     effects:[]

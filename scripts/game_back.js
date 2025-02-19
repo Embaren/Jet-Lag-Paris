@@ -110,6 +110,42 @@ class Game{
                 }
             });
 			
+			socket.on('challenge', (addressId, callback)=>{
+				const addressProps = game.state.addresses[addressId].properties;
+				if(socket.teamId == addressProps.team){
+					return callback(false);
+				}
+				if(addressProps.current_owner != addressProps.team){
+					return callback(false);
+				}
+				if(addressProps.challengers.includes(socket.teamId)){
+					return callback(false);
+				}
+				
+				addressProps.challengers.push(socket.teamId);
+				addressProps.challengers_colors.push(socket.teamConfig.color);
+				socket.broadcast.emit('challenge',addressId,socket.teamId);
+				callback(true);
+			});
+			
+			socket.on('unchallenge', (addressId, callback)=>{
+				const addressProps = game.state.addresses[addressId].properties;
+				if(socket.teamId == addressProps.team){
+					return callback(false);
+				}
+				if(addressProps.current_owner != addressProps.team){
+					return callback(false);
+				}
+				if(!addressProps.challengers.includes(socket.teamId)){
+					return callback(false);
+				}
+				const challengerIndex = addressProps.challengers.indexOf(socket.teamId);
+				addressProps.challengers.splice(challengerIndex,1);
+				addressProps.challengers_colors.splice(challengerIndex,1);
+				socket.broadcast.emit('unchallenge',addressId,socket.teamId);
+				callback(true);
+			});
+			
 			socket.on('capture', (addressId, callback)=>{
 				const addressProps = game.state.addresses[addressId].properties;
 				if(socket.teamId == addressProps.team){
@@ -124,7 +160,8 @@ class Game{
 				}
 				addressProps.current_owner = socket.teamId;
 				addressProps.owner_color = socket.teamConfig.color;
-				//game.state.teams[socket.teamId].points += game.config.pointsPerCapture;
+				addressProps.challengers.length = 0;
+				addressProps.challengers_colors.length = 0;
 				socket.broadcast.emit('capture',addressId,socket.teamId);
 				callback(true);
 			});
