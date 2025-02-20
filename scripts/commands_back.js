@@ -314,8 +314,9 @@ function getExplore(game){
 // =====================================================================================
 
 class CommandPrompt{
-    constructor(game){
+    constructor(game,promptIo){
         this.game = game;
+		this.promptIo = promptIo;
         
 		// Commands list
         this.commands = {
@@ -329,12 +330,15 @@ class CommandPrompt{
             time: getTime(this.game),
         }
         
+		/*
         this.cli = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
         });
+		*/
         const self = this;
         
+		/*
         const log = console.log;
         console.log = function() {
             self.cli.pause();
@@ -343,11 +347,12 @@ class CommandPrompt{
             self.cli.resume();
             self.cli._refreshLine();
         }
+		*/
     }
 	
 	log(str){
-		console.log(str)
-		this.game.io.of('/admin').emit('log',str);
+		console.log(this.game.name+': '+str)
+		this.promptIo.emit('log',str);
 	}
 	
 	parse(command){
@@ -402,7 +407,7 @@ class CommandPrompt{
 	
 	initIo(){
 		const self = this;
-		this.game.io.of('/admin').on('connection', (socket) => {            
+		this.promptIo.on('connection', (socket) => {            
             console.log('an admin connected');
 			socket.log = (str)=>{
 				socket.emit('log',str);

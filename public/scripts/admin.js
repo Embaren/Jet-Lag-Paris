@@ -1,4 +1,4 @@
-var socket = io('/admin');
+var socket = io(location.pathname);
 
 var enabled = false;
 

@@ -122,7 +122,7 @@ class Players{
 export class Game{
     constructor(io, gameContainer, autorun=true){
         this.io = io;
-        this.socket = io('/game');
+        this.socket = io(location.pathname);
         this.container = gameContainer;
         
         this.tracking = null;
@@ -147,8 +147,8 @@ export class Game{
                 disconnectDiv.appendChild(document.createTextNode("CONNECTION PERDUE. VEUILLEZ ATTENDRE OU REACTUALISER LA PAGE."));
                 game.container.appendChild(disconnectDiv);
             });
-            game.socket.on("connect", () => {
-                console.log("Connect");
+            game.socket.on("listening", () => {
+                console.log("connect");
                 game.initConfig();
             });
         }

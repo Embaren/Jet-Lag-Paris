@@ -1,4 +1,6 @@
 {
+	"map": "paris",
+	"gamemode": "ctf1",
     "teams": [
         {
             "name": "JAUNE",

@@ -1,17 +1,19 @@
 const {Library} = require('./library_back.js');
-const socketio = require('socket.io');
 const {checkSector} = require('./utils_back.js');
 const {Powers} = require('./powers_back');
 const {Players} = require('./players_back');
 const {CommandPrompt} = require('./commands_back.js');
 
 class Game{
-    constructor(gameConfig, getServer){
+    constructor(gameConfig, name, io){
         this.config = gameConfig;
-        this.getServer = getServer;
+		this.name = name;
+		this.gameIo = io.of('/game/'+name);
 		
-		this.commandPrompt = new CommandPrompt(this);
-		this.commandPrompt.prompt();
+		this.commandPrompt = new CommandPrompt(this,io.of('/admin/'+name));
+		this.log('created')
+		
+		this.new();
     }
 	
 	log(str){
@@ -19,8 +21,6 @@ class Game{
 	}
     
     new(){
-        this.io = null;
-		
 		this.players = new Players(this.config);
 		
 		this.powers = new Powers(this.config);
@@ -49,132 +49,137 @@ class Game{
         const self = this;
         this.library.whenReady.then(()=>{
             self.state.addresses = self.library.addresses;
+			self.log("initialised");
             self.run();
         });
     }
     
-    run(){
-		console.log("Opening sockets...");
-        this.io = socketio(this.getServer());
-		this.gameIo = this.io.of('/game');
+	processSocket(socket){
+		const game = this;
+		
+		game.log('a player connected');
+		
+		socket.emit('listening');
+		
+		socket.on('request_config', (callback)=>{
+			callback(game.config);
+		});
+		
+		socket.on('identify_client', (playerId,loc,callback)=>{
+			socket.playerId = playerId;
+			
+			socket.player = game.players.get(playerId);
+			socket.player.loc = loc;
+			socket.playerConfig = game.players.getConfig(playerId);
+			
+			const teamId = game.players.getTeam(playerId);
+			socket.teamId = teamId;
+			socket.teamConfig = game.config.teams[teamId];
+			socket.teamState = game.state.teams[teamId];
+			
+			game.players.setSocket(playerId, socket);
+			socket.join(["t:"+teamId,"p:"+playerId]);
+			
+			game.log('joined '+socket.playerConfig.name+' from '+socket.teamConfig.name+' team');
+			this.shareSocketLocation(socket);
+			
+			const visiblePlayers = game.players.getVisiblePlayers(playerId,this.powers);
+			
+			const visiblePowers = game.powers.getVisiblePowers(playerId);
+			
+			callback(game.state,visiblePlayers,visiblePowers);
+		});
+	  
+		socket.on('disconnect', () => {
+			if(socket.playerId){
+				game.log('left '+socket.playerConfig.name+' from '+socket.teamConfig.name+' team');
+			}
+			game.log('player disconnected');
+		});
+		
+		socket.on('share_location', (loc, callback)=>{
+			if(!socket.playerId){
+				callback({status: false, reason:'LOGGEDOUT'});
+			}
+			else{
+				socket.player.loc = loc;
+				this.shareSocketLocation(socket);
+				callback({status: true});
+			}
+		});
+		
+		socket.on('challenge', (addressId, callback)=>{
+			const addressProps = game.state.addresses[addressId].properties;
+			if(socket.teamId == addressProps.team){
+				return callback(false);
+			}
+			if(addressProps.current_owner != addressProps.team){
+				return callback(false);
+			}
+			if(addressProps.challengers.includes(socket.teamId)){
+				return callback(false);
+			}
+			
+			addressProps.challengers.push(socket.teamId);
+			addressProps.challengers_colors.push(socket.teamConfig.color);
+			socket.broadcast.emit('challenge',addressId,socket.teamId);
+			callback(true);
+		});
+		
+		socket.on('unchallenge', (addressId, callback)=>{
+			const addressProps = game.state.addresses[addressId].properties;
+			if(socket.teamId == addressProps.team){
+				return callback(false);
+			}
+			if(addressProps.current_owner != addressProps.team){
+				return callback(false);
+			}
+			if(!addressProps.challengers.includes(socket.teamId)){
+				return callback(false);
+			}
+			const challengerIndex = addressProps.challengers.indexOf(socket.teamId);
+			addressProps.challengers.splice(challengerIndex,1);
+			addressProps.challengers_colors.splice(challengerIndex,1);
+			socket.broadcast.emit('unchallenge',addressId,socket.teamId);
+			callback(true);
+		});
+		
+		socket.on('capture', (addressId, callback)=>{
+			const addressProps = game.state.addresses[addressId].properties;
+			if(socket.teamId == addressProps.team){
+				return callback(false);
+			}
+			if(addressProps.current_owner != addressProps.team){
+				return callback(false);
+			}
+			const success = this.give(socket.teamId,game.config.pointsPerCapture);
+			if(!success){
+				return callback(false);
+			}
+			addressProps.current_owner = socket.teamId;
+			addressProps.owner_color = socket.teamConfig.color;
+			addressProps.challengers.length = 0;
+			addressProps.challengers_colors.length = 0;
+			socket.broadcast.emit('capture',addressId,socket.teamId);
+			callback(true);
+		});
+		
+		socket.on('buy_power', (powerId, target, callback)=>{
+			return callback(game.buyPower(powerId, socket.playerId, target));
+		});
+		
+		socket.on('complete_power', (powerId, callback)=>{
+			return callback(game.completePower(powerId, socket.playerId));
+		});
+	}
+	
+    run(){		
 		this.commandPrompt.initIo();
         const game = this;
-        this.gameIo.on('connection', (socket) => {
-			
-			console.log('a player connected');
-            
-            socket.on('request_config', (callback)=>{
-                callback(game.config);
-            });
-            
-            socket.on('identify_client', (playerId,loc,callback)=>{
-                socket.playerId = playerId;
-                
-                socket.player = game.players.get(playerId);
-                socket.player.loc = loc;
-                socket.playerConfig = game.players.getConfig(playerId);
-                
-                const teamId = game.players.getTeam(playerId);
-                socket.teamId = teamId;
-                socket.teamConfig = game.config.teams[teamId];
-                socket.teamState = game.state.teams[teamId];
-				
-				game.players.setSocket(playerId, socket);
-                socket.join(["t:"+teamId,"p:"+playerId]);
-                
-                game.log('joined '+socket.playerConfig.name+' from '+socket.teamConfig.name+' team');
-                this.shareSocketLocation(socket);
-                
-				const visiblePlayers = game.players.getVisiblePlayers(playerId,this.powers);
-				
-				const visiblePowers = game.powers.getVisiblePowers(playerId);
-				
-                callback(game.state,visiblePlayers,visiblePowers);
-            });
-          
-            socket.on('disconnect', () => {
-				if(socket.playerId){
-					game.log('left '+socket.playerConfig.name+' from '+socket.teamConfig.name+' team');
-				}
-                console.log('player disconnected');
-            });
-            
-            socket.on('share_location', (loc, callback)=>{
-                if(!socket.playerId){
-                    callback({status: false, reason:'LOGGEDOUT'});
-                }
-                else{
-                    socket.player.loc = loc;
-                    this.shareSocketLocation(socket);
-                    callback({status: true});
-                }
-            });
-			
-			socket.on('challenge', (addressId, callback)=>{
-				const addressProps = game.state.addresses[addressId].properties;
-				if(socket.teamId == addressProps.team){
-					return callback(false);
-				}
-				if(addressProps.current_owner != addressProps.team){
-					return callback(false);
-				}
-				if(addressProps.challengers.includes(socket.teamId)){
-					return callback(false);
-				}
-				
-				addressProps.challengers.push(socket.teamId);
-				addressProps.challengers_colors.push(socket.teamConfig.color);
-				socket.broadcast.emit('challenge',addressId,socket.teamId);
-				callback(true);
-			});
-			
-			socket.on('unchallenge', (addressId, callback)=>{
-				const addressProps = game.state.addresses[addressId].properties;
-				if(socket.teamId == addressProps.team){
-					return callback(false);
-				}
-				if(addressProps.current_owner != addressProps.team){
-					return callback(false);
-				}
-				if(!addressProps.challengers.includes(socket.teamId)){
-					return callback(false);
-				}
-				const challengerIndex = addressProps.challengers.indexOf(socket.teamId);
-				addressProps.challengers.splice(challengerIndex,1);
-				addressProps.challengers_colors.splice(challengerIndex,1);
-				socket.broadcast.emit('unchallenge',addressId,socket.teamId);
-				callback(true);
-			});
-			
-			socket.on('capture', (addressId, callback)=>{
-				const addressProps = game.state.addresses[addressId].properties;
-				if(socket.teamId == addressProps.team){
-					return callback(false);
-				}
-				if(addressProps.current_owner != addressProps.team){
-					return callback(false);
-				}
-				const success = this.give(socket.teamId,game.config.pointsPerCapture);
-				if(!success){
-					return callback(false);
-				}
-				addressProps.current_owner = socket.teamId;
-				addressProps.owner_color = socket.teamConfig.color;
-				addressProps.challengers.length = 0;
-				addressProps.challengers_colors.length = 0;
-				socket.broadcast.emit('capture',addressId,socket.teamId);
-				callback(true);
-			});
-			
-			socket.on('buy_power', (powerId, target, callback)=>{
-				return callback(game.buyPower(powerId, socket.playerId, target));
-			});
-			
-			socket.on('complete_power', (powerId, callback)=>{
-				return callback(game.completePower(powerId, socket.playerId));
-			});
-        });
-		game.log("Game running");
+		this.gameIo.sockets.forEach(
+		(socket)=>{game.processSocket(socket);});
+        this.gameIo.on('connection', (socket)=>{game.processSocket(socket);});
+		this.log("running");
     }
     
     shareSocketLocation(socket){
@@ -292,11 +297,8 @@ class Game{
     
     reset(){
 		this.log("Resetting game...");
-		const self = this;
-        this.io.close(()=>{
-			self.getServer().start(()=>{self.new()});
-		});
-        
+		this.gameIo.local.disconnectSockets();
+		this.new();        
     }
 }
 
